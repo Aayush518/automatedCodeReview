@@ -1,6 +1,5 @@
 import subprocess
 import json
-
 class EnhancedCodeAnalyzer:
     def __init__(self):
         self.analysis_cache = {}
