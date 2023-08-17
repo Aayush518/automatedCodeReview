@@ -37,5 +37,3 @@ python main.py
 ```
 
 After providing the path to the code file, the tool will display analysis results, average code quality score, and common issues (if any).
-
-```
