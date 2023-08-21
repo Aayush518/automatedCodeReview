@@ -1,4 +1,4 @@
-# author : aayush
+
 from analyzer import EnhancedCodeAnalyzer
 
 def code_inspection_party():
