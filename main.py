@@ -12,7 +12,7 @@ def code_inspection_party():
 
         average_score = code_investigator.get_average_score(file_quest)
         if average_score is not None:
-            print(f"Average Code Quality Score: {average_score:.2f}")  # Format score to two decimal places
+            print(f"Average Code Quality Score: {average_score:.2f}")
 
         common_issues = code_investigator.get_most_common_issues(file_quest)
         if common_issues:
@@ -20,11 +20,26 @@ def code_inspection_party():
             for issue in common_issues:
                 print(f"- {issue['message']} ({issue['category']})")
 
-        # Additional feature: Show suggestions for improvement
         if 'suggestions' in inspection_results:
             print("\nSuggestions for Improvement:")
             for suggestion in inspection_results['suggestions']:
                 print(f"- {suggestion}")
+
+        function_list = code_investigator.get_function_list(file_quest)
+        if function_list:
+            print("\nFunctions found in the code:")
+            for function in function_list:
+                print(f"- {function}")
+
+        class_list = code_investigator.get_class_list(file_quest)
+        if class_list:
+            print("\nClasses found in the code:")
+            for class_name in class_list:
+                print(f"- {class_name}")
+
+        complexity = code_investigator.get_code_complexity(file_quest)
+        if complexity != -1:
+            print(f"\nCode Complexity: {complexity}")
 
     except Exception as e:
         print(e)
