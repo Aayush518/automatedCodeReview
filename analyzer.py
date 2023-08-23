@@ -38,6 +38,21 @@ class EnhancedCodeAnalyzer:
             return sorted_issues[:num_issues]
         return []
 
+    def get_function_list(self, file_path):
+        parsed_result = self.scrutinize(file_path)
+        functions = [entry['symbol'] for entry in parsed_result.get('functions', [])]
+        return functions
+
+    def get_class_list(self, file_path):
+        parsed_result = self.scrutinize(file_path)
+        classes = [entry['symbol'] for entry in parsed_result.get('classes', [])]
+        return classes
+
+    def get_code_complexity(self, file_path):
+        parsed_result = self.scrutinize(file_path)
+        complexity = parsed_result.get('global', {}).get('complexity', -1)
+        return complexity
+
     def _parse_output(self, output_data):
         try:
             parsed_result = json.loads(output_data)
