@@ -24,43 +24,15 @@ class EnhancedCodeAnalyzer:
             error_msg = f"Magical mishap! An error occurred during analysis: {ex.output}"
             raise Exception(error_msg)
 
-    def get_average_score(self, file_path):
+    # ... (other methods)
+
+    def get_files_imported(self, file_path):
         parsed_result = self.scrutinize(file_path)
-        if 'global_note' in parsed_result:
-            return parsed_result['global_note']
-        return None
+        imported_files = parsed_result.get('dependencies', [])
+        return imported_files
 
-    def get_most_common_issues(self, file_path, num_issues=5):
+    def get_complexity_by_function(self, file_path):
         parsed_result = self.scrutinize(file_path)
-        issues = parsed_result.get('messages', [])
-        if issues:
-            sorted_issues = sorted(issues, key=lambda x: x['message'], reverse=True)
-            return sorted_issues[:num_issues]
-        return []
-
-    def get_function_list(self, file_path):
-        parsed_result = self.scrutinize(file_path)
-        functions = [entry['symbol'] for entry in parsed_result.get('functions', [])]
-        return functions
-
-    def get_class_list(self, file_path):
-        parsed_result = self.scrutinize(file_path)
-        classes = [entry['symbol'] for entry in parsed_result.get('classes', [])]
-        return classes
-
-    def get_code_complexity(self, file_path):
-        parsed_result = self.scrutinize(file_path)
-        complexity = parsed_result.get('global', {}).get('complexity', -1)
-        return complexity
-
-    def _parse_output(self, output_data):
-        try:
-            parsed_result = json.loads(output_data)
-            return parsed_result
-        except json.JSONDecodeError as json_err:
-            print(f"Oops! Error deciphering the mystical JSON: {json_err}")
-            return {}
-
-    @staticmethod
-    def _is_valid_file(file_path):
-        return file_path.endswith('.py')
+        functions = parsed_result.get('functions', [])
+        complexity_by_function = {entry['name']: entry['complexity'] for entry in functions}
+        return complexity_by_function
