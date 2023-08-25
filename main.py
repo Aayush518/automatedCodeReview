@@ -1,48 +1,38 @@
+import subprocess
 import json
-from analyzer import EnhancedCodeAnalyzer
 
-def code_inspection_party():
-    code_investigator = EnhancedCodeAnalyzer()
-    file_quest = input("Greetings! Provide the path to your enchanted code scroll: ")
+class EnhancedCodeAnalyzer:
+    def __init__(self):
+        self.analysis_cache = {}
 
-    try:
-        inspection_results = code_investigator.scrutinize(file_quest)
-        print("Results of the Enchanted Code Inspection:")
-        print(json.dumps(inspection_results, indent=2))
+    def scrutinize(self, file_path):
+        if not self._is_valid_file(file_path):
+            return "Oops! This doesn't look like a wizard's spell book (Python file)."
 
-        average_score = code_investigator.get_average_score(file_quest)
-        if average_score is not None:
-            print(f"Average Code Quality Score: {average_score:.2f}")
+        if file_path in self.analysis_cache:
+            return self.analysis_cache[file_path]
 
-        common_issues = code_investigator.get_most_common_issues(file_quest)
-        if common_issues:
-            print("Most Common Issues:")
-            for issue in common_issues:
-                print(f"- {issue['message']} ({issue['category']})")
+        command = ['pylint', '--output-format=json', '--reports=no', file_path]
 
-        if 'suggestions' in inspection_results:
-            print("\nSuggestions for Improvement:")
-            for suggestion in inspection_results['suggestions']:
-                print(f"- {suggestion}")
+        try:
+            process_output = subprocess.check_output(command, stderr=subprocess.STDOUT).decode('utf-8')
+            parsed_result = self._parse_output(process_output)
+            self.analysis_cache[file_path] = parsed_result
+            return parsed_result
 
-        function_list = code_investigator.get_function_list(file_quest)
-        if function_list:
-            print("\nFunctions found in the code:")
-            for function in function_list:
-                print(f"- {function}")
+        except subprocess.CalledProcessError as ex:
+            error_msg = f"Magical mishap! An error occurred during analysis: {ex.output}"
+            raise Exception(error_msg)
 
-        class_list = code_investigator.get_class_list(file_quest)
-        if class_list:
-            print("\nClasses found in the code:")
-            for class_name in class_list:
-                print(f"- {class_name}")
+    # ... (other methods)
 
-        complexity = code_investigator.get_code_complexity(file_quest)
-        if complexity != -1:
-            print(f"\nCode Complexity: {complexity}")
+    def get_files_imported(self, file_path):
+        parsed_result = self.scrutinize(file_path)
+        imported_files = parsed_result.get('dependencies', [])
+        return imported_files
 
-    except Exception as e:
-        print(e)
-
-if __name__ == "__main__":
-    code_inspection_party()
+    def get_complexity_by_function(self, file_path):
+        parsed_result = self.scrutinize(file_path)
+        functions = parsed_result.get('functions', [])
+        complexity_by_function = {entry['name']: entry['complexity'] for entry in functions}
+        return complexity_by_function
